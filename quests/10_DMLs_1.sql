@@ -9,7 +9,7 @@ CREATE TABLE news_articles (
 -- 데이터를 테이블에 추가
 INSERT INTO news_articles (title, url, author, published_at)
 VALUES ('AI 시대 도래', 'https://news.com/ai', '홍길동', '2025-01-01'),
-        ('경제 성장률 상승', 'https://news.com/economy', '이영희', '2025-01-05');
+    ('경제 성장률 상승', 'https://news.com/economy', '이영희', '2025-01-05');
 
 -- auther가 "홍길동"인 데이터만 조회하는 쿼리를 작성
 SELECT *
