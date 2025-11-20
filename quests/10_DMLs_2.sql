@@ -7,12 +7,11 @@ CREATE TABLE web_links (
 -- 데이터 3개를 생성하는 INSERT문 작성
 insert INTO web_links (link_text, link_url, category)
 VALUES ('네이버', 'https://naver.com', 'portal'),
-    ('구글', 'https://google.com', 'portal'),
-    ('깃허브', 'https://github.com', 'dev');
+        ('구글', 'https://google.com', 'portal'),
+        ('깃허브', 'https://github.com', 'dev');
 
 -- category가 "portal"인 링크만 조회
-SELECT * 
-FROM web_links
+SELECT * FROM web_links
 WHERE category = 'portal';
 
 -- "깃허브"의 category를 "code" 로 수정
