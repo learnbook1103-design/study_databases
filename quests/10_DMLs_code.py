@@ -57,6 +57,7 @@ with conn.cursor() as cursor  :
     records = cursor.fetchall()
     for record in records:
         print(record)
+conn.commit()
 
 # 문제 4 UPDATE 연습
 # id = '912d995f-9bdc-423c-9df4-a715c29b46c9' 인 학생의 나이를 25로 수정하시오.
@@ -84,3 +85,4 @@ with conn.cursor() as cursor :
     second_student_id = second_student[0]
     cursor.execute(f"DELETE FROM students  WHERE id = '{second_student_id}';")    
 conn.commit()
+
