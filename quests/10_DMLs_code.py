@@ -34,29 +34,29 @@ with conn.cursor() as cursor  :
     cursor.execute("INSERT INTO students (name, age) VALUES ('박철수', 26);")
 conn.commit()
 
-# #문제 3 READ (SELECT) 기본 조회
-# # 다음 조건들을 만족하는 SELECT 쿼리를 작성하시오.
-# # students 테이블의 전체 데이터를 조회
-# # 나이가 22세 이상인 학생만 조회
-# # name 이 “홍길동”인 학생만 조회
-# with conn.cursor() as cursor  :
-#     print("students 테이블의 전체 데이터 조회:")
-#     cursor.execute("SELECT * FROM students;")
-#     records = cursor.fetchall()
-#     for record in records:
-#         print(record)
+#문제 3 READ (SELECT) 기본 조회
+# 다음 조건들을 만족하는 SELECT 쿼리를 작성하시오.
+# students 테이블의 전체 데이터를 조회
+# 나이가 22세 이상인 학생만 조회
+# name 이 “홍길동”인 학생만 조회
+with conn.cursor() as cursor  :
+    print("students 테이블의 전체 데이터 조회:")
+    cursor.execute("SELECT * FROM students;")
+    records = cursor.fetchall()
+    for record in records:
+        print(record)
 
-#     print("\n나이가 22세 이상인 학생 조회:")
-#     cursor.execute("SELECT * FROM students WHERE age >= 22;")
-#     records = cursor.fetchall()
-#     for record in records:
-#         print(record)
+    print("\n나이가 22세 이상인 학생 조회:")
+    cursor.execute("SELECT * FROM students WHERE age >= 22;")
+    records = cursor.fetchall()
+    for record in records:
+        print(record)
 
-#     print("\nname이 '홍길동'인 학생 조회:")
-#     cursor.execute("SELECT * FROM students WHERE name = '홍길동';")
-#     records = cursor.fetchall()
-#     for record in records:
-#         print(record)
+    print("\nname이 '홍길동'인 학생 조회:")
+    cursor.execute("SELECT * FROM students WHERE name = '홍길동';")
+    records = cursor.fetchall()
+    for record in records:
+        print(record)
 
 # 문제 4 UPDATE 연습
 # id = '912d995f-9bdc-423c-9df4-a715c29b46c9' 인 학생의 나이를 25로 수정하시오.
