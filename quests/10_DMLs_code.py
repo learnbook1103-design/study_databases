@@ -71,11 +71,11 @@ with conn.cursor() as cursor :
     record = cursor.fetchall()
     second_student = record[1]
     second_student_id = second_student[0]
-    cursor.execute(f"UPDATE students SET age = 30 WHERE id = '{second_student_id}';")    
+    cursor.execute(f"UPDATE students SET age = 25 WHERE id = '{second_student_id}';")    
 conn.commit()
 
 # 문제 5 DELETE 연습
-# 저장된 순번에  세번째 학생 데이터를 삭제하는 DELETE 문을 작성하시오.
+# 저장된 순번에 세번째 학생 데이터를 삭제하는 DELETE 문을 작성하시오.
 # Option : select 통한 UUID id 가져와서 delete
 
 with conn.cursor() as cursor :
