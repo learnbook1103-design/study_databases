@@ -1,0 +1,406 @@
+{
+  "name": "RAG agent with Postgrel for me",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "https://drive.google.com/drive/folders/1nGnMy0h5gSCtNkw6PSO5u4IBpjckjE2X",
+          "mode": "url"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -384,
+        -720
+      ],
+      "id": "47bb5624-4c9b-4f53-a9b9-224dfa99cae2",
+      "name": "Google Drive Trigger1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "V4T1asacAVvf7gvo",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        48,
+        -704
+      ],
+      "id": "c24a54c9-3760-4494-83a1-89ffd95691cf",
+      "name": "Download file1",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "V4T1asacAVvf7gvo",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "n8n_vectors_me",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        -704
+      ],
+      "id": "1ea6cc18-6112-4d45-8fe1-bcbd5d49f8f8",
+      "name": "Postgres PGVector Store1",
+      "credentials": {
+        "postgres": {
+          "id": "CYsGnAw7VR9loVUX",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        272,
+        -528
+      ],
+      "id": "bde986b0-ad42-486d-a9d9-dd665dd64e5f",
+      "name": "Embeddings Google Gemini1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "vpCWqSZQELM1r4FG",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "document_title",
+                "value": "={{ $json.id }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        -528
+      ],
+      "id": "be50d448-7856-487c-a39c-400707487700",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        368,
+        -368
+      ],
+      "id": "23f56383-7ff2-40cd-b658-2f32f0c537d4",
+      "name": "Recursive Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        -464
+      ],
+      "id": "e3591174-215f-4dd8-8632-2043532f8a5f",
+      "name": "When chat message received",
+      "webhookId": "fca4f149-6ba3-4473-8f81-79d2f52f6ba1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Role: You are a highly specialized AI Chemistry Expert designed to answer user queries based only on the content provided in two professional chemistry documents (a Physical Chemistry textbook and an Engineering Chemistry document).\n\nInstructions:\n\n1. Primary Source of Truth: All answers must be generated exclusively by utilizing the information contained within the 'Retrieved Context' provided to you. This context covers specialized knowledge in Physical Chemistry (Thermodynamics, Quantum Chemistry, Kinetics, Macroscopic/Microscopic Structures) and Engineering Chemistry (Electrochemistry, Electrode Potential).\n\n2. Mandatory Citation: For every fact, concept, or definition drawn from the retrieved context, you must include the source using the format `` immediately following the sentence or phrase it supports.\n\n3. Response Style: Maintain an academic and professional tone. Answer the core of the user's question accurately and clearly. For complex queries requiring synthesis from both documents, effectively integrate information from both sources and cite them appropriately.\n\n4. Handling Missing Information: If the information required to answer the user's question is not present in the provided context, do not use external knowledge. State explicitly: \"The provided documents do not contain direct information regarding this question.\"\n\n5. Language: Respond in Korean."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -224,
+        -464
+      ],
+      "id": "142a632c-98ff-4051-8d72-5fc63f03b01e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -272
+      ],
+      "id": "b334feb5-afe5-44cf-b586-3c3edce6bc02",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "vpCWqSZQELM1r4FG",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Retrieve specialized academic content from the two provided chemistry documents (Physical Chemistry and Engineering Chemistry) that is semantically relevant to the user's query, specifically covering topics such as thermodynamics, quantum chemistry, electrochemistry, and kinetics. The retrieved content must be used as the *Retrieved Context* for the AI agent's answer generation.",
+        "tableName": "n8n_vectors_me",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1.3,
+      "position": [
+        -16,
+        -272
+      ],
+      "id": "91c34125-058c-47ed-8ca9-b0c06b68016f",
+      "name": "Postgres PGVector Store2",
+      "credentials": {
+        "postgres": {
+          "id": "CYsGnAw7VR9loVUX",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        -112
+      ],
+      "id": "59943bd7-473e-45c7-984c-74a4e143712f",
+      "name": "Embeddings Google Gemini2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "vpCWqSZQELM1r4FG",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        -272
+      ],
+      "id": "a00c3129-9c1c-41ba-88e1-e829eae396ec",
+      "name": "Postgres Chat Memory",
+      "credentials": {
+        "postgres": {
+          "id": "CYsGnAw7VR9loVUX",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -176,
+        -720
+      ],
+      "id": "18b5e6d5-39bf-4b59-8346-edec87fabfe0",
+      "name": "Loop Over Items"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Drive Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file1": {
+      "main": [
+        [
+          {
+            "node": "Postgres PGVector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Postgres PGVector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Download file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f2340f66-cfa6-4c4e-bea3-29c2272f9bc1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "93ca683c15815f25bc48eaee44b183a255bf0d31445cceee4f43eb666f6f03e3"
+  },
+  "id": "pxj6W27a4gaWXG34",
+  "tags": []
+}
